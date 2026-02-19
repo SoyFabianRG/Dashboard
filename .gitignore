@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Entorno virtual
+.venv/
+
+# VS Code
+.vscode/
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Archivos temporales
+*.swp
+*.swo
+*.bak
+*.tmp
+
+# Archivos de logs
+*.log
+
+# Archivos de datos grandes (opcional)
+# data/

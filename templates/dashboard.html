@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Tipo de Cambio USD/MXN</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+        min-height: 100vh;
+        color: #e0e0e0;
+      }
+
+      .header {
+        text-align: center;
+        padding: 2rem 1rem 1rem;
+      }
+
+      .header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, #00d2ff, #3a7bd5);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        color: transparent;
+        margin-bottom: 0.25rem;
+      }
+
+      .header p {
+        color: #8e8ea0;
+        font-size: 0.95rem;
+      }
+
+      .dashboard {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 1rem 1.5rem 2rem;
+      }
+
+      /* ---- KPI Cards ---- */
+      .kpi-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .kpi-card {
+        background: rgba(255, 255, 255, 0.06);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        padding: 1.25rem 1.5rem;
+        text-align: center;
+        transition: transform 0.2s;
+      }
+
+      .kpi-card:hover {
+        transform: translateY(-4px);
+      }
+
+      .kpi-card .label {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #8e8ea0;
+        margin-bottom: 0.5rem;
+      }
+
+      .kpi-card .value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #00d2ff;
+      }
+
+      .kpi-card .sub {
+        font-size: 0.78rem;
+        margin-top: 0.3rem;
+      }
+
+      .positive {
+        color: #4caf50;
+      }
+      .negative {
+        color: #f44336;
+      }
+
+      /* ---- Chart Container ---- */
+      .chart-wrapper {
+        background: rgba(255, 255, 255, 0.06);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .chart-wrapper h2 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: #ccc;
+      }
+
+      canvas {
+        width: 100% !important;
+      }
+
+      /* ---- Filter Row ---- */
+      .filter-row {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        margin-bottom: 1.5rem;
+        align-items: center;
+      }
+
+      .filter-row label {
+        font-size: 0.85rem;
+        color: #8e8ea0;
+      }
+
+      .filter-row input[type="date"],
+      .filter-row select {
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: #e0e0e0;
+        border-radius: 8px;
+        padding: 0.45rem 0.75rem;
+        font-size: 0.85rem;
+        outline: none;
+      }
+
+      .filter-row button {
+        background: linear-gradient(90deg, #00d2ff, #3a7bd5);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1.25rem;
+        font-size: 0.85rem;
+        cursor: pointer;
+        font-weight: 600;
+        transition: opacity 0.2s;
+      }
+
+      .filter-row button:hover {
+        opacity: 0.85;
+      }
+
+      /* ---- Table ---- */
+      .table-wrapper {
+        background: rgba(255, 255, 255, 0.06);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        padding: 1.5rem;
+        overflow-x: auto;
+      }
+
+      .table-wrapper h2 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: #ccc;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        text-align: left;
+        padding: 0.6rem 1rem;
+        font-size: 0.85rem;
+      }
+
+      th {
+        color: #8e8ea0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 0.75rem;
+      }
+
+      td {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      }
+
+      tr:hover td {
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      .footer {
+        text-align: center;
+        padding: 1.5rem;
+        color: #555;
+        font-size: 0.78rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>Tipo de Cambio USD → MXN</h1>
+      <p>Dashboard interactivo con datos históricos</p>
+    </div>
+
+    <div class="dashboard">
+      <!-- KPI Cards -->
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="label">Último Valor</div>
+          <div class="value" id="kpi-last">—</div>
+          <div class="sub" id="kpi-last-date"></div>
+        </div>
+        <div class="kpi-card">
+          <div class="label">Mínimo</div>
+          <div class="value" id="kpi-min">—</div>
+          <div class="sub" id="kpi-min-date"></div>
+        </div>
+        <div class="kpi-card">
+          <div class="label">Máximo</div>
+          <div class="value" id="kpi-max">—</div>
+          <div class="sub" id="kpi-max-date"></div>
+        </div>
+        <div class="kpi-card">
+          <div class="label">Promedio</div>
+          <div class="value" id="kpi-avg">—</div>
+          <div class="sub">Periodo seleccionado</div>
+        </div>
+        <div class="kpi-card">
+          <div class="label">Variación</div>
+          <div class="value" id="kpi-change">—</div>
+          <div class="sub" id="kpi-change-label"></div>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="filter-row">
+        <label for="date-from">Desde:</label>
+        <input type="date" id="date-from" />
+        <label for="date-to">Hasta:</label>
+        <input type="date" id="date-to" />
+        <button onclick="applyFilters()">Aplicar</button>
+        <button
+          onclick="resetFilters()"
+          style="background: rgba(255, 255, 255, 0.1)"
+        >
+          Reiniciar
+        </button>
+      </div>
+
+      <!-- Chart -->
+      <div class="chart-wrapper">
+        <h2>Evolución del Tipo de Cambio</h2>
+        <canvas id="chart-line" height="320"></canvas>
+      </div>
+
+      <!-- Table -->
+      <div class="table-wrapper">
+        <h2>Datos Recientes</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Tipo de Cambio (MXN)</th>
+              <th>Variación diaria</th>
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="footer">Dashboard USD/MXN &mdash; Datos desde archivo CSV</div>
+
+    <script>
+      let allData = [];
+      let lineChart = null;
+
+      async function fetchData(from, to) {
+        let url = "/api/tipo-cambio";
+        const params = new URLSearchParams();
+        if (from) params.append("desde", from);
+        if (to) params.append("hasta", to);
+        if (params.toString()) url += "?" + params.toString();
+
+        const resp = await fetch(url);
+        return await resp.json();
+      }
+
+      function updateKPIs(data) {
+        if (!data.length) return;
+
+        const last = data[data.length - 1];
+        const first = data[0];
+        const values = data.map((d) => d.tipo_cambio);
+        const min = Math.min(...values);
+        const max = Math.max(...values);
+        const avg = values.reduce((a, b) => a + b, 0) / values.length;
+        const change = last.tipo_cambio - first.tipo_cambio;
+        const changePct = (change / first.tipo_cambio) * 100;
+
+        document.getElementById("kpi-last").textContent =
+          "$" + last.tipo_cambio.toFixed(2);
+        document.getElementById("kpi-last-date").textContent = last.fecha;
+
+        const minIdx = values.indexOf(min);
+        document.getElementById("kpi-min").textContent = "$" + min.toFixed(2);
+        document.getElementById("kpi-min-date").textContent =
+          data[minIdx].fecha;
+
+        const maxIdx = values.indexOf(max);
+        document.getElementById("kpi-max").textContent = "$" + max.toFixed(2);
+        document.getElementById("kpi-max-date").textContent =
+          data[maxIdx].fecha;
+
+        document.getElementById("kpi-avg").textContent = "$" + avg.toFixed(2);
+
+        const sign = change >= 0 ? "+" : "";
+        document.getElementById("kpi-change").textContent =
+          sign + change.toFixed(2);
+        document.getElementById("kpi-change").className =
+          "value " + (change >= 0 ? "negative" : "positive");
+        document.getElementById("kpi-change-label").textContent =
+          sign + changePct.toFixed(2) + "% en periodo";
+        document.getElementById("kpi-change-label").className =
+          "sub " + (change >= 0 ? "negative" : "positive");
+      }
+
+      function renderChart(data) {
+        const labels = data.map((d) => d.fecha);
+        const values = data.map((d) => d.tipo_cambio);
+
+        if (lineChart) lineChart.destroy();
+
+        const ctx = document.getElementById("chart-line").getContext("2d");
+
+        const gradient = ctx.createLinearGradient(0, 0, 0, 320);
+        gradient.addColorStop(0, "rgba(0, 210, 255, 0.35)");
+        gradient.addColorStop(1, "rgba(0, 210, 255, 0.0)");
+
+        lineChart = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels,
+            datasets: [
+              {
+                label: "USD/MXN",
+                data: values,
+                borderColor: "#00d2ff",
+                backgroundColor: gradient,
+                borderWidth: 2.5,
+                pointRadius: 3,
+                pointBackgroundColor: "#00d2ff",
+                pointHoverRadius: 6,
+                fill: true,
+                tension: 0.3,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { intersect: false, mode: "index" },
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: "rgba(30,30,50,0.95)",
+                titleColor: "#8e8ea0",
+                bodyColor: "#fff",
+                cornerRadius: 8,
+                padding: 10,
+                callbacks: {
+                  label: (ctx) => " $" + ctx.parsed.y.toFixed(2) + " MXN",
+                },
+              },
+            },
+            scales: {
+              x: {
+                ticks: { color: "#666", maxRotation: 45, maxTicksLimit: 15 },
+                grid: { color: "rgba(255,255,255,0.04)" },
+              },
+              y: {
+                ticks: { color: "#666", callback: (v) => "$" + v.toFixed(2) },
+                grid: { color: "rgba(255,255,255,0.06)" },
+              },
+            },
+          },
+        });
+      }
+
+      function renderTable(data) {
+        const tbody = document.getElementById("table-body");
+        const recent = data.slice(-20).reverse();
+        tbody.innerHTML = recent
+          .map((d, i) => {
+            const idx = data.length - 1 - i;
+            const prev = idx > 0 ? data[idx - 1].tipo_cambio : d.tipo_cambio;
+            const diff = d.tipo_cambio - prev;
+            const sign = diff >= 0 ? "+" : "";
+            const cls = diff >= 0 ? "negative" : "positive";
+            return `<tr>
+                <td>${d.fecha}</td>
+                <td>$${d.tipo_cambio.toFixed(2)}</td>
+                <td class="${cls}">${sign}${diff.toFixed(2)}</td>
+            </tr>`;
+          })
+          .join("");
+      }
+
+      async function loadDashboard(from, to) {
+        const data = await fetchData(from, to);
+        allData = data;
+        updateKPIs(data);
+        renderChart(data);
+        renderTable(data);
+
+        if (data.length && !document.getElementById("date-from").value) {
+          document.getElementById("date-from").value = data[0].fecha;
+          document.getElementById("date-to").value =
+            data[data.length - 1].fecha;
+        }
+      }
+
+      function applyFilters() {
+        const from = document.getElementById("date-from").value;
+        const to = document.getElementById("date-to").value;
+        loadDashboard(from, to);
+      }
+
+      function resetFilters() {
+        document.getElementById("date-from").value = "";
+        document.getElementById("date-to").value = "";
+        loadDashboard();
+      }
+
+      // Initial load
+      loadDashboard();
+    </script>
+  </body>
+</html>
