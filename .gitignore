@@ -30,4 +30,4 @@ Thumbs.db
 data/**/*
 
 # Pero NO ignorar los archivos .gitkeep (esto mantiene la carpeta en GitHub)
-!data/**/.gitkeepgit rm -r --cached data/
+!data/**/.gitkeep
