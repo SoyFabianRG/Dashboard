@@ -18,6 +18,7 @@ body {
   font-weight: 700;
   background: linear-gradient(90deg, #ff9a44, #fc6076);
   -webkit-background-clip: text;
+  background-clip: text; /* <-- Aquí está la corrección */
   -webkit-text-fill-color: transparent;
   margin-bottom: 0.25rem;
 }

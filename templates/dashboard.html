@@ -39,7 +39,28 @@
           <div class="label">Promedio Diario</div>
           <div class="value" id="kpi-avg">—</div>
         </div>
+        <div class="kpi-card">
+          <div class="label">Estación más llena</div>
+          <div class="value" id="kpi-station">—</div>
+        </div>
+        <div class="kpi-card">
+          <div class="label">Línea más usada</div>
+          <div class="value" id="kpi-line">—</div>
+        </div>
+      </div>
+
+      <div class="charts-grid">
+        <div class="chart-wrapper">
+          <h2>Tendencia Diaria de Afluencia</h2>
+          <canvas id="chart-trend" height="300"></canvas>
+        </div>
+        <div class="chart-wrapper">
+          <h2>Afluencia por Línea</h2>
+          <canvas id="chart-lines" height="300"></canvas>
+        </div>
       </div>
     </div>
+
+    <script src="/static/dashboard.js"></script>
   </body>
 </html>
