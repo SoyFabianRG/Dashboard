@@ -10,6 +10,9 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
 	"fastapi[standard]>=0.95.0",
+	"requests",
+	"pandas",
+	"numpy",
 ]
 
 [tool.setuptools]
@@ -21,4 +24,3 @@ dev = [
 	"pytest",
 	"debugpy"
 ]
-
