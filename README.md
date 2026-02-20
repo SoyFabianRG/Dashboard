@@ -1,9 +1,14 @@
-# Dashboard USD/MXN
+# Dashboard Afluencia del Metro
 
 Dashboard interactivo que muestra la evolución del tipo de cambio USD → MXN, construido con **FastAPI**, **Chart.js** y datos desde un archivo CSV.
 
+## Ejecución
+
+Para ejecutar:
+
 ```bash
-uv venv; overlay use .venv/bin/activate.nu; uv pip install -e .; fastapi dev
+chmod +x run_pipeline.sh
+./run_pipeline.sh
 ```
 
 El dashboard estará disponible en **http://127.0.0.1:8000**.
@@ -75,3 +80,5 @@ Dentro de Neovim:
    - `<leader>pT`: correr toda la suite de tests.
    - `<leader>dPt`: debug del test actual.
    - `<leader>dPc`: debug de la clase de tests.
+
+Este dashboard usa datos hasta el 31 de enero de 2026

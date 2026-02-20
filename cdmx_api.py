@@ -1,5 +1,7 @@
+import os
 import requests
 import pandas as pd
+from pathlib import Path
 
 def obtener_datos_cdmx(resource_id: str, limite: int = 1000) -> pd.DataFrame:
     """
@@ -38,14 +40,28 @@ def obtener_datos_cdmx(resource_id: str, limite: int = 1000) -> pd.DataFrame:
         return pd.DataFrame()
 
 if __name__ == "__main__":
-    # --- PRUEBA DEL SCRIPT ---
-    # Ejemplo: Afluencia diaria del Metro CDMX
-    # URL original: https://datos.cdmx.gob.mx/dataset/afluencia-diaria-del-metro-cdmx/resource/cce544e1-dc6b-42b4-bc27-0d8e6eb3ed72
+    # ID del dataset de Afluencia del Metro CDMX
     ID_EJEMPLO = "cce544e1-dc6b-42b4-bc27-0d8e6eb3ed72"
     
-    df_resultado = obtener_datos_cdmx(ID_EJEMPLO, limite=5)
+    # En la vida real, el metro tiene millones de registros. 
+    # Para tu portafolio, bajemos una muestra representativa (ej. 50,000 registros)
+    print("Iniciando descarga de datos desde la API...")
+    df_resultado = obtener_datos_cdmx(ID_EJEMPLO, limite=50000)
     
-    print("\n--- Vista Previa de Datos ---")
-    print(df_resultado.head())
-    print("\n--- Columnas Disponibles ---")
-    print(df_resultado.columns.tolist())
+    if not df_resultado.empty:
+        # Definir la ruta usando pathlib (Buena práctica para evitar errores en Windows/Mac)
+        # Esto apuntará a la carpeta data/raw/ dentro de tu proyecto
+        base_dir = Path(__file__).parent
+        raw_dir = base_dir / "data" / "raw"
+        
+        # Crear las carpetas si no existen
+        raw_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Ruta final del archivo
+        archivo_salida = raw_dir / "raw_afluencia_metro.csv"
+        
+        # Guardar el DataFrame como CSV
+        df_resultado.to_csv(archivo_salida, index=False)
+        print(f"¡Éxito! Se guardaron {len(df_resultado)} registros en: {archivo_salida}")
+    else:
+        print("No se pudo descargar la información. Revisa tu conexión o la API.")
