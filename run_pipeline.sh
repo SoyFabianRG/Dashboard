@@ -1,27 +1,18 @@
 #!/usr/bin/env bash
 set -e
 
-echo "========================================"
-echo "Iniciando el Pipeline de Datos del Metro"
-echo "========================================"
+echo "=========================================="
+echo "Iniciando Dashboard de Afluencia del Metro"
+echo "=========================================="
 
-# Verificamos si .venv existe. Si no, lo creamos y preparamos.
-if [ ! -d ".venv" ]; then
-    echo "0. Creando entorno virtual e instalando dependencias con uv..."
-    uv venv
-    uv pip install -e .
-else
-    echo "0. Entorno virtual detectado."
-fi
+echo "0. Sincronizando entorno virtual y dependencias..."
+uv sync
 
-# Al usar 'uv run', no necesitamos hacer 'source' ni 'overlay use'.
-# uv se encarga de ejecutar todo dentro del .venv automáticamente.
-
-echo "1. Extrayendo datos de la API (Extract)..."
+echo "1. Extrayendo datos de la API..."
 uv run python cdmx_api.py
 
-echo "2. Limpiando y transformando datos (Transform & Load)..."
+echo "2. Limpiando y transformando datos..."
 uv run python clean_data.py
 
-echo "3. Iniciando el Dashboard (FastAPI)..."
+echo "3. Iniciando el Dashboard..."
 uv run fastapi dev main.py

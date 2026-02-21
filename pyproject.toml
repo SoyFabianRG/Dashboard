@@ -3,9 +3,9 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "dashboard-usd-mxn"
+name = "dashboard"
 version = "0.1.0"
-description = "Dashboard interactivo del tipo de cambio USD/MXN con FastAPI"
+description = "Dashboard interactivo con FastAPI"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
