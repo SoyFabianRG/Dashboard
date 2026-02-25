@@ -3,7 +3,7 @@ from pathlib import Path
 
 if __name__ == "__main__":
     # 1. Definir las rutas de entrada y salida de forma segura
-    base_dir = Path(__file__).parent
+    base_dir = Path(__file__).resolve().parent.parent.parent
     raw_file = base_dir / "data" / "raw" / "raw_afluencia_metro.csv"
     processed_dir = base_dir / "data" / "processed"
     processed_file = processed_dir / "clean_afluencia_metro.csv"

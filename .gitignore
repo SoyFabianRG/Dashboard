@@ -9,7 +9,8 @@ __pycache__/
 # Entorno virtual
 .venv/
 dashboard.egg-info/
-*.lock
+uv.lock
+src/api/__pycache__
 
 # VS Code
 .vscode/

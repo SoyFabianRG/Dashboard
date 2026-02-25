@@ -8,7 +8,7 @@ from fastapi.staticfiles import StaticFiles  # Importación necesaria para servi
 import pandas as pd
 
 # 1. Definir rutas (usando la estructura de carpetas profesional)
-BASE_DIR = Path(__file__).parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 CSV_PATH = BASE_DIR / "data" / "processed" / "clean_afluencia_metro.csv"
 TEMPLATE_PATH = BASE_DIR / "templates" / "dashboard.html"
 STATIC_DIR = BASE_DIR / "static"  # Ruta a la carpeta estática en la raíz

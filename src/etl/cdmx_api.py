@@ -51,7 +51,7 @@ if __name__ == "__main__":
     if not df_resultado.empty:
         # Definir la ruta usando pathlib (Buena práctica para evitar errores en Windows/Mac)
         # Esto apuntará a la carpeta data/raw/ dentro de tu proyecto
-        base_dir = Path(__file__).parent
+        base_dir = Path(__file__).resolve().parent.parent.parent
         raw_dir = base_dir / "data" / "raw"
         
         # Crear las carpetas si no existen
